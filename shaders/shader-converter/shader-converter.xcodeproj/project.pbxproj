@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC50F51B254475DF00D82834 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F51A254475DF00D82834 /* main.m */; };
+		AC50F5262544790C00D82834 /* SFolderConfigs.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F5252544790C00D82834 /* SFolderConfigs.m */; };
+		AC50F5552544889F00D82834 /* SShaderConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F5542544889F00D82834 /* SShaderConverter.m */; };
+		AC50F55E25448B3100D82834 /* SBgfxConverterWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F55D25448B3100D82834 /* SBgfxConverterWrapper.m */; };
+		AC50F56525448CDD00D82834 /* SBgfxConverterParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F56425448CDD00D82834 /* SBgfxConverterParameters.m */; };
+		AC50F56D25448E1000D82834 /* SFileMD5Generator.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F56C25448E1000D82834 /* SFileMD5Generator.m */; };
+		AC50F57325448E9200D82834 /* SShaderFileLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F57225448E9200D82834 /* SShaderFileLookup.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AC50F515254475DF00D82834 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AC50F517254475DF00D82834 /* shader-converter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "shader-converter"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC50F51A254475DF00D82834 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AC50F5222544762D00D82834 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		AC50F5242544790C00D82834 /* SFolderConfigs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFolderConfigs.h; sourceTree = "<group>"; };
+		AC50F5252544790C00D82834 /* SFolderConfigs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SFolderConfigs.m; sourceTree = "<group>"; };
+		AC50F52B25447E4000D82834 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AC50F5532544889F00D82834 /* SShaderConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SShaderConverter.h; sourceTree = "<group>"; };
+		AC50F5542544889F00D82834 /* SShaderConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SShaderConverter.m; sourceTree = "<group>"; };
+		AC50F5592544895700D82834 /* shadercRelease */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = shadercRelease; sourceTree = "<group>"; };
+		AC50F55C25448B3100D82834 /* SBgfxConverterWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SBgfxConverterWrapper.h; sourceTree = "<group>"; };
+		AC50F55D25448B3100D82834 /* SBgfxConverterWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SBgfxConverterWrapper.m; sourceTree = "<group>"; };
+		AC50F56325448CDD00D82834 /* SBgfxConverterParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SBgfxConverterParameters.h; sourceTree = "<group>"; };
+		AC50F56425448CDD00D82834 /* SBgfxConverterParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SBgfxConverterParameters.m; sourceTree = "<group>"; };
+		AC50F56B25448E1000D82834 /* SFileMD5Generator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFileMD5Generator.h; sourceTree = "<group>"; };
+		AC50F56C25448E1000D82834 /* SFileMD5Generator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SFileMD5Generator.m; sourceTree = "<group>"; };
+		AC50F57125448E9200D82834 /* SShaderFileLookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SShaderFileLookup.h; sourceTree = "<group>"; };
+		AC50F57225448E9200D82834 /* SShaderFileLookup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SShaderFileLookup.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC50F514254475DF00D82834 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC50F50E254475DF00D82834 = {
+			isa = PBXGroup;
+			children = (
+				AC50F52B25447E4000D82834 /* README.md */,
+				AC50F5222544762D00D82834 /* shaders */,
+				AC50F5582544895700D82834 /* libs */,
+				AC50F519254475DF00D82834 /* shader-converter */,
+				AC50F518254475DF00D82834 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC50F518254475DF00D82834 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F517254475DF00D82834 /* shader-converter */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC50F519254475DF00D82834 /* shader-converter */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F56A25448DB100D82834 /* ShaderLookup */,
+				AC50F55B25448B2300D82834 /* BGFXConverter */,
+				AC50F54D2544881100D82834 /* ShaderConverter */,
+				AC50F51A254475DF00D82834 /* main.m */,
+			);
+			path = "shader-converter";
+			sourceTree = "<group>";
+		};
+		AC50F54D2544881100D82834 /* ShaderConverter */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F5532544889F00D82834 /* SShaderConverter.h */,
+				AC50F5542544889F00D82834 /* SShaderConverter.m */,
+			);
+			path = ShaderConverter;
+			sourceTree = "<group>";
+		};
+		AC50F5582544895700D82834 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F5592544895700D82834 /* shadercRelease */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		AC50F55B25448B2300D82834 /* BGFXConverter */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F55C25448B3100D82834 /* SBgfxConverterWrapper.h */,
+				AC50F55D25448B3100D82834 /* SBgfxConverterWrapper.m */,
+				AC50F56325448CDD00D82834 /* SBgfxConverterParameters.h */,
+				AC50F56425448CDD00D82834 /* SBgfxConverterParameters.m */,
+			);
+			path = BGFXConverter;
+			sourceTree = "<group>";
+		};
+		AC50F56A25448DB100D82834 /* ShaderLookup */ = {
+			isa = PBXGroup;
+			children = (
+				AC50F5242544790C00D82834 /* SFolderConfigs.h */,
+				AC50F5252544790C00D82834 /* SFolderConfigs.m */,
+				AC50F56B25448E1000D82834 /* SFileMD5Generator.h */,
+				AC50F56C25448E1000D82834 /* SFileMD5Generator.m */,
+				AC50F57125448E9200D82834 /* SShaderFileLookup.h */,
+				AC50F57225448E9200D82834 /* SShaderFileLookup.m */,
+			);
+			path = ShaderLookup;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC50F516254475DF00D82834 /* shader-converter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC50F51E254475DF00D82834 /* Build configuration list for PBXNativeTarget "shader-converter" */;
+			buildPhases = (
+				AC50F513254475DF00D82834 /* Sources */,
+				AC50F514254475DF00D82834 /* Frameworks */,
+				AC50F515254475DF00D82834 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "shader-converter";
+			productName = "shader-converter";
+			productReference = AC50F517254475DF00D82834 /* shader-converter */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC50F50F254475DF00D82834 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = S;
+				LastUpgradeCheck = 1200;
+				TargetAttributes = {
+					AC50F516254475DF00D82834 = {
+						CreatedOnToolsVersion = 12.0.1;
+					};
+				};
+			};
+			buildConfigurationList = AC50F512254475DF00D82834 /* Build configuration list for PBXProject "shader-converter" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AC50F50E254475DF00D82834;
+			productRefGroup = AC50F518254475DF00D82834 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC50F516254475DF00D82834 /* shader-converter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC50F513254475DF00D82834 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC50F56525448CDD00D82834 /* SBgfxConverterParameters.m in Sources */,
+				AC50F55E25448B3100D82834 /* SBgfxConverterWrapper.m in Sources */,
+				AC50F51B254475DF00D82834 /* main.m in Sources */,
+				AC50F57325448E9200D82834 /* SShaderFileLookup.m in Sources */,
+				AC50F5262544790C00D82834 /* SFolderConfigs.m in Sources */,
+				AC50F56D25448E1000D82834 /* SFileMD5Generator.m in Sources */,
+				AC50F5552544889F00D82834 /* SShaderConverter.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AC50F51C254475DF00D82834 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AC50F51D254475DF00D82834 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AC50F51F254475DF00D82834 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y39R442P5T;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AC50F520254475DF00D82834 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y39R442P5T;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC50F512254475DF00D82834 /* Build configuration list for PBXProject "shader-converter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC50F51C254475DF00D82834 /* Debug */,
+				AC50F51D254475DF00D82834 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC50F51E254475DF00D82834 /* Build configuration list for PBXNativeTarget "shader-converter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC50F51F254475DF00D82834 /* Debug */,
+				AC50F520254475DF00D82834 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC50F50F254475DF00D82834 /* Project object */;
+}

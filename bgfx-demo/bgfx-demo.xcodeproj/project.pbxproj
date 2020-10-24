@@ -48,6 +48,7 @@
 		AC50F3CA254426EC00D82834 /* libbimg_decodeRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC50F3A9254426EC00D82834 /* libbimg_decodeRelease.a */; };
 		AC50F3CB254426EC00D82834 /* libbimgRelease.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC50F3AA254426EC00D82834 /* libbimgRelease.a */; };
 		AC50F3EA25442C5100D82834 /* BRenderMetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F3E925442C5100D82834 /* BRenderMetalView.m */; };
+		AC50F4F62544752900D82834 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = AC50F4F52544752900D82834 /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,6 +163,7 @@
 		AC50F3AA254426EC00D82834 /* libbimgRelease.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbimgRelease.a; sourceTree = "<group>"; };
 		AC50F3E825442C5100D82834 /* BRenderMetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BRenderMetalView.h; sourceTree = "<group>"; };
 		AC50F3E925442C5100D82834 /* BRenderMetalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BRenderMetalView.m; sourceTree = "<group>"; };
+		AC50F4F52544752900D82834 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 		AC50F2EF2544221E00D82834 = {
 			isa = PBXGroup;
 			children = (
+				AC50F4F52544752900D82834 /* assets */,
 				AC50F34F254426EC00D82834 /* libs */,
 				AC50F2FA2544221E00D82834 /* bgfx-demo */,
 				AC50F3162544222000D82834 /* bgfx-demoTests */,
@@ -589,6 +592,7 @@
 				AC50F3BF254426EC00D82834 /* simd128_ref.inl in Resources */,
 				AC50F3BE254426EC00D82834 /* string.inl in Resources */,
 				AC50F3B2254426EC00D82834 /* bx.inl in Resources */,
+				AC50F4F62544752900D82834 /* assets in Resources */,
 				AC50F3AF254426EC00D82834 /* allocator.inl in Resources */,
 				AC50F3082544221F00D82834 /* Assets.xcassets in Resources */,
 				AC50F3C7254426EC00D82834 /* endian.inl in Resources */,
