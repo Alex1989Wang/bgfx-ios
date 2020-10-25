@@ -9,14 +9,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, emShaderCompileType) {
+    emShaderCompileTypeVertex = 1,
+    emShaderCompileTypeFragment
+};
+
 // root folder's name to save shaders
 extern NSString *const kShaderRootFolderName;
 
 extern NSString *const kBgfxDependencyFolderSubpath;
 
-extern NSString *const kVertexShaderFolderSubpath;
+extern NSString *const kVertexShaderPathExtension;
 
-extern NSString *const kFragmentShaderFolderSubpath;
+extern NSString *const kFragmentShaderPathExtension;
+
+extern NSString *const kShaderOutputFolderName;
 
 /// manage shader files and directories
 @interface SShaderFileLookup : NSObject
@@ -35,8 +42,9 @@ extern NSString *const kFragmentShaderFolderSubpath;
 /// @param shaderRootPath the root path
 - (instancetype)initWithShaderFolderPath:(NSString *)shaderRootPath NS_DESIGNATED_INITIALIZER;
 
-/// relative paths for all fragment shader files
-- (NSArray<NSString *> *)getAllFragmentFile;
+/// relative paths for all shader files
+/// shader type to file subpaths map
+- (NSDictionary<NSNumber *, NSArray<NSString *> *> *)getAllShaderFilesSubpaths;
 
 /// absolute path for a vertex shader path
 - (NSString *)getVertexFileWithFragmentFile:(NSString *)fragmentFilePath isDefaultVertexFile:(BOOL *)isDefaultFile;
@@ -45,8 +53,6 @@ extern NSString *const kFragmentShaderFolderSubpath;
 - (NSString *)getDefineFileWithFragmentFile:(NSString *)fragmentFilePath isDefaultDefineFile:(BOOL *)isDefaultFile;
 
 - (NSString *)getFragmentFileWithFragmentFile:(NSString *)fragmentFilePath;
-
-- (NSString *)getDefaultVertexShaderPath:(NSString *)platform;
 
 /// extracting the shader file name from its file path
 - (NSString *)getShaderFileName:(NSString *)shaderFilePath;

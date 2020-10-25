@@ -12,9 +12,11 @@ NSString *const kShaderRootFolderName = @"shaders";
 
 NSString *const kBgfxDependencyFolderSubpath = @"/common/src";
 
-NSString *const kVertexShaderFolderSubpath = @"/vertexs";
+NSString *const kVertexShaderPathExtension = @"vs";
 
-NSString *const kFragmentShaderFolderSubpath = @"/fragments";
+NSString *const kFragmentShaderPathExtension = @"fs";
+
+NSString *const kShaderOutputFolderName = @"output";
 
 @interface SShaderFileLookup()
 
@@ -37,23 +39,40 @@ NSString *const kFragmentShaderFolderSubpath = @"/fragments";
     return self;
 }
 
-- (NSArray<NSString *> *)getAllFragmentFile
-{
-    NSString *bgfxPath = [self.rootPath stringByAppendingPathComponent:@"bgfx"];
-
-    NSDirectoryEnumerator *directoryEnumerator = [self.mFileMgr enumeratorAtPath:bgfxPath];
-
-    NSString *filePath = nil;
-    NSMutableArray<NSString *> *allFragmentFiles = [[NSMutableArray alloc] init];
-    while (filePath = [directoryEnumerator nextObject])
-    {
-        if ([[filePath pathExtension] isEqualToString:@"fs"])
-        {
-            NSString *relativeFilePath = [@"bgfx" stringByAppendingPathComponent:filePath];
-            [allFragmentFiles addObject:relativeFilePath];
+- (NSDictionary<NSNumber *,NSArray<NSString *> *> *)getAllShaderFilesSubpaths {
+    NSMutableDictionary<NSNumber *, NSMutableArray<NSString *> *> *map = [NSMutableDictionary dictionary];
+    NSDirectoryEnumerator<NSString *> *dirEnumerator = [self.mFileMgr enumeratorAtPath:self.rootPath];
+    // enumerating
+    NSString *subpath = dirEnumerator.nextObject;
+    while (subpath.length) {
+        // if it's an compiled file
+        if ([subpath containsString:kShaderOutputFolderName]) {
+            subpath = dirEnumerator.nextObject;
+            continue;
         }
+        NSString *pathExt = [subpath pathExtension];
+        // vertex shader
+        if ([pathExt isEqualTo:kVertexShaderPathExtension]) {
+            NSMutableArray<NSString *> *paths = map[@(emShaderCompileTypeVertex)];
+            if (!paths) {
+                paths = [NSMutableArray array];
+                map[@(emShaderCompileTypeVertex)] = paths;
+            }
+            [paths addObject:subpath];
+        }
+        // fragment shader
+        else if ([pathExt isEqualTo:kFragmentShaderPathExtension]) {
+            NSMutableArray<NSString *> *paths = map[@(emShaderCompileTypeFragment)];
+            if (!paths) {
+                paths = [NSMutableArray array];
+                map[@(emShaderCompileTypeFragment)] = paths;
+            }
+            [paths addObject:subpath];
+        }
+        // next
+        subpath = dirEnumerator.nextObject;
     }
-    return allFragmentFiles;
+    return [map copy];
 }
 
 - (NSString *)getVertexFileWithFragmentFile:(NSString *)fragmentFilePath isDefaultVertexFile:(BOOL *)isDefaultFile
@@ -88,21 +107,8 @@ NSString *const kFragmentShaderFolderSubpath = @"/fragments";
     return wholeDefineFilePath;
 }
 
-- (NSString *)getFragmentFileWithFragmentFile:(NSString *)fragmentFilePath
-{
+- (NSString *)getFragmentFileWithFragmentFile:(NSString *)fragmentFilePath {
     return [self setupWholeFilePathWithRelativePath:fragmentFilePath];
-}
-
-- (NSString *)getDefaultVertexShaderPath:(NSString *)platform
-{
-    NSMutableArray<NSString *> *pathComposition = [[@"bgfx/default/common.vs" pathComponents] mutableCopy];
-    pathComposition[0] = platform;
-    
-    [pathComposition insertObject:@"output.bundle" atIndex:0];
-    
-    NSString *platformDir = [NSString pathWithComponents:pathComposition];
-    NSString *wholePlatformDir = [self setupWholeFilePathWithRelativePath:platformDir];
-    return wholePlatformDir;
 }
 
 - (NSString *)getShaderFileName:(NSString *)shaderFilePath
@@ -114,27 +120,13 @@ NSString *const kFragmentShaderFolderSubpath = @"/fragments";
 {
     NSMutableArray<NSString *> *pathComposition = [[fragmentFilePath pathComponents] mutableCopy];
     pathComposition[0] = platform;
-    [pathComposition enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        pathComposition[idx] = [SFileMD5Generator MD5ForString:obj withIsRelease: isRelease];
-    }];
-    
-    NSString *bundleStr = [NSString stringWithFormat:@"%@.bundle", [SFileMD5Generator MD5ForString:@"output" withIsRelease:isRelease]];
+    NSString *bundleStr = [NSString stringWithFormat:@"%@.bundle", kShaderOutputFolderName];
     [pathComposition insertObject:bundleStr atIndex:0];
     
     NSString *platformDir = [[NSString pathWithComponents:pathComposition] stringByDeletingLastPathComponent];
     NSString *wholePlatformDir = [self setupWholeFilePathWithRelativePath:platformDir];
-    if (![self.mFileMgr fileExistsAtPath:wholePlatformDir])
-    {
+    if (![self.mFileMgr fileExistsAtPath:wholePlatformDir]) {
         [self.mFileMgr createDirectoryAtPath:wholePlatformDir withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    
-    //文件存在，relese下要删除output.bundle,debug下要删除加密的文件
-    NSString *needDeletebundleStr = [NSString stringWithFormat:@"%@.bundle", [SFileMD5Generator MD5ForString:@"output" withIsRelease:!isRelease]];
-    NSString *needDeletePath = [self setupWholeFilePathWithRelativePath:needDeletebundleStr];
-    if ([self.mFileMgr fileExistsAtPath:needDeletePath])
-    {
-       BOOL deleteRes = [self.mFileMgr removeItemAtPath:needDeletePath error:nil];
-        NSLog(@"删除另一种j环境路径：%@ 结果：%d",needDeletePath, deleteRes);
     }
     return wholePlatformDir;
 }
@@ -145,8 +137,7 @@ NSString *const kFragmentShaderFolderSubpath = @"/fragments";
 }
 
 #pragma mark - 內部方法
-- (NSString *)setupWholeFilePathWithRelativePath:(NSString *)relativePath
-{
+- (NSString *)setupWholeFilePathWithRelativePath:(NSString *)relativePath {
     return [self.rootPath stringByAppendingPathComponent:relativePath];
 }
 

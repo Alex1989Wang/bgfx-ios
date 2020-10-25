@@ -18,11 +18,6 @@ typedef NS_OPTIONS(NSInteger, emShaderCompileOption) {
     emShaderCompileOptionFragment = 1 << 1
 };
 
-typedef NS_ENUM(NSInteger, emShaderCompileType) {
-    emShaderCompileTypeVertex = 1,
-    emShaderCompileTypeFragment
-};
-
 @interface SShaderConverter()
 
 @property(nonatomic, strong) SBgfxConverterWrapper *mBgfxConvter;
@@ -51,33 +46,14 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
 }
 
 - (void)startConvertWithLog:(BOOL)needLog {
-    [self preConvert:needLog];
     [self convert:needLog];
 }
 
-- (void)preConvert:(BOOL)needLog {
-    // shared shaders should be converted first
-    NSLog(@"Converting shared shaders.");
-    NSString *commonVSFilePath = [self.mFileManager mDefaultVertexFilePath];
-    NSString *commonDefFilePath = [self.mFileManager mDefaultDefineFilePath];
-    [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
-        [self convertShader:@"bgfx/common/common.fs"
-             shaderFilePath:commonVSFilePath
-                defFilePath:commonDefFilePath
-                compileType:emShaderCompileTypeVertex
-                   platform:platformInfo
-               shaderSuffix:@"vs"
-                 andNeedLog:needLog];
-    }];
-    NSLog(@"Done converting shared shaders.");
-}
-
-- (void)convert:(BOOL)needLog
-{
-    NSLog(@"🍎再开始转换其他shader");
+- (void)convert:(BOOL)needLog {
+    NSLog(@"Start converting all shaders.");
     
-    /** 获取目录下的所有片元着色器进行遍历 **/
-    NSArray<NSString *> *allFragmentsFileArr = [self.mFileManager getAllFragmentFile];
+    // get shader files
+    NSDictionary<NSNumber *,NSArray<NSString *> *> *allShaderFileMap = [self.mFileManager getAllShaderFilesSubpaths];
 
     //每次转换的结果
     __block BOOL compileResult = YES;
@@ -87,133 +63,107 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
     __block NSInteger noNeedCompileCount = 0;
     __block NSInteger useDefaultShaderVCCount = 0;
     NSMutableArray<NSString *> *failedShaderArr = [[NSMutableArray alloc] init];
-    [allFragmentsFileArr enumerateObjectsUsingBlock:^(NSString *fragmentPath, NSUInteger index, BOOL *stop) {
-        /** 判断是否需要重要编译，以及需要编译哪些shader **/
-        emShaderCompileOption compileType = [self decideShaderCompileType:fragmentPath];
-        if (compileType != emShaderCompileOptionNone)
-        {
-            BOOL isDefaultDefFile = NO;
-            BOOL isDefaultVertextFile = NO;
-            /** 获取片元着色器文件绝对路径 **/
-            NSString *fragmentFilePath = [self.mFileManager getFragmentFileWithFragmentFile:fragmentPath];
-            
-            /** 获取define文件的绝对路径 **/
-            NSString *defFilePath = [self.mFileManager getDefineFileWithFragmentFile:fragmentPath
-                                                                 isDefaultDefineFile:&isDefaultDefFile];
-            /** 获取顶点着色器文件绝对路径 **/
-            NSString *vertexFilePath = [self.mFileManager getVertexFileWithFragmentFile:fragmentPath
-                                                                    isDefaultVertexFile:&isDefaultVertextFile];
-            /** 获取顶点着色器文件的相对路径(相对于bgfx始) **/
-            NSString *vertexPath = [vertexFilePath substringFromIndex:[vertexFilePath rangeOfString:@"bgfx"].location];
-            
-            if (isDefaultVertextFile || isDefaultDefFile)
-            {
-                NSAssert((isDefaultVertextFile && isDefaultDefFile), @"vs和def应该配套出现，要么都用公用的，要么都是自己特定的");
+    
+    for (NSNumber *type in @[@(emShaderCompileTypeVertex), @(emShaderCompileTypeFragment)]) {
+        NSArray<NSString *> *shaderSubpaths = allShaderFileMap[type];
+        emShaderCompileType sType = (emShaderCompileType)[type integerValue];
+        [shaderSubpaths enumerateObjectsUsingBlock:^(NSString * _Nonnull shaderRelativePath, NSUInteger idx, BOOL * _Nonnull stop) {
+            /** 判断是否需要重要编译，以及需要编译哪些shader **/
+            emShaderCompileOption compileType = [self decideShaderCompileType:shaderRelativePath];
+            if (compileType == emShaderCompileOptionNone) {
+                NSLog(@"No change for shader %@", shaderRelativePath);
+                noNeedCompileCount++;
+                return;
             }
            
-            //判断是否需要编译片元着色器
-            if (compileType & emShaderCompileTypeFragment)
-            {
-                [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
-                    /** 编译片元着色器 **/
-                    compileFSCount++;
-                    NSString *compileOutputPath = [self convertShader:fragmentPath
-                                                       shaderFilePath:fragmentFilePath
-                                                          defFilePath:defFilePath
-                                                          compileType:emShaderCompileTypeFragment
-                                                             platform:platformInfo
-                                                         shaderSuffix:@"fs"
-                                                           andNeedLog:needLog];
-                    compileResult = compileOutputPath != nil;
+            // fragment
+            switch (sType) {
+                case emShaderCompileTypeFragment: {
+                    /** 获取片元着色器文件绝对路径 **/
+                    NSString *fragmentFilePath = [self.mFileManager getFragmentFileWithFragmentFile:shaderRelativePath];
+                    /** 获取define文件的绝对路径 **/
+                    BOOL isDefaultDefFile = NO;
+                    NSString *defFilePath = [self.mFileManager getDefineFileWithFragmentFile:shaderRelativePath
+                                                                         isDefaultDefineFile:&isDefaultDefFile];
+                    // no need to convert
+                    if (!(compileType & emShaderCompileTypeFragment)) { break; }
+                    [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
+                        /** 编译片元着色器 **/
+                        compileFSCount++;
+                        NSString *compileOutputPath = [self convertShader:shaderRelativePath
+                                                           shaderFilePath:fragmentFilePath
+                                                              defFilePath:defFilePath
+                                                              compileType:emShaderCompileTypeFragment
+                                                                 platform:platformInfo
+                                                             shaderSuffix:@"fs"
+                                                               andNeedLog:needLog];
+                        compileResult = compileOutputPath != nil;
+                        if (!compileResult)
+                        {
+                            NSAssert(NO, @"%@-%@转换失败", shaderRelativePath, platformInfo);
+                            [failedShaderArr addObject:[NSString stringWithFormat:@"%@-%@", shaderRelativePath, platformInfo]];
+                        }
+                    }];
                     if (compileResult)
                     {
-                        if (self.isRelease)
+                        //既然编译成功了，那么就需要做MD5缓存，方便下次判断是否需要重新编译。
+                        //为了简化流程，不去判断到底该缓存什么，这里简单粗暴地处理：只要不是公用的存def和vertex，不论是否有变化，都直接缓存。
+                        /** 获取define文件的相对路径(相对于bgfx始) **/
+                        if (!isDefaultDefFile)
                         {
+                            [self cacheCompiledShader:defFilePath];
                         }
+                        [self cacheCompiledShader:fragmentFilePath];
+                        
                     }
-                    else
+                    break;
+                }
+                case emShaderCompileTypeVertex: {
+                    BOOL isDefaultVertextFile = NO;
+                    /** 获取顶点着色器文件绝对路径 **/
+                    NSString *vertexFilePath = [self.mFileManager getVertexFileWithFragmentFile:shaderRelativePath
+                                                                            isDefaultVertexFile:&isDefaultVertextFile];
+                    /** 获取define文件的绝对路径 **/
+                    BOOL isDefaultDefFile = NO;
+                    NSString *defFilePath = [self.mFileManager getDefineFileWithFragmentFile:shaderRelativePath
+                                                                         isDefaultDefineFile:&isDefaultDefFile];
+                    //判断是否需要编译顶点着色器
+                    if (!(compileType & emShaderCompileTypeVertex)) { break; }
+                    [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
+                        /** 编译顶点着色器 **/
+                        compileVSCount++;
+                        NSString *compileOutputPath = [self convertShader:shaderRelativePath
+                                                           shaderFilePath:vertexFilePath
+                                                              defFilePath:defFilePath
+                                                              compileType:emShaderCompileTypeVertex
+                                                                 platform:platformInfo
+                                                             shaderSuffix:@"vs"
+                                                               andNeedLog:needLog];
+                        
+                        compileResult = compileOutputPath != nil;
+                        if (!compileResult) {
+                            NSAssert(NO, @"%@-%@转换失败", shaderRelativePath, platformInfo);
+                            [failedShaderArr addObject:[NSString stringWithFormat:@"%@-%@", shaderRelativePath, platformInfo]];
+                        }
+                    }];
+                    if (compileResult)
                     {
-                        NSAssert(NO, @"%@-%@转换失败", fragmentPath, platformInfo);
-                        [failedShaderArr addObject:[NSString stringWithFormat:@"%@-%@", fragmentPath, platformInfo]];
+                        //既然编译成功了，那么就需要做MD5缓存，方便下次判断是否需要重新编译。
+                        //为了简化流程，不去判断到底该缓存什么，这里简单粗暴地处理：只要不是公用的存def和vertex，不论是否有变化，都直接缓存。
+                        /** 获取define文件的相对路径(相对于bgfx始) **/
+                        if (!isDefaultDefFile) {
+                            [self cacheCompiledShader:defFilePath];
+                        }
+                        [self cacheCompiledShader:vertexFilePath];
                     }
-                }];
-                if (compileResult)
-                {
-                    //既然编译成功了，那么就需要做MD5缓存，方便下次判断是否需要重新编译。
-                    //为了简化流程，不去判断到底该缓存什么，这里简单粗暴地处理：只要不是公用的存def和vertex，不论是否有变化，都直接缓存。
-                    /** 获取define文件的相对路径(相对于bgfx始) **/
-                    if (!isDefaultDefFile)
-                    {
-                        NSString *defPath = [defFilePath substringFromIndex:[defFilePath rangeOfString:@"bgfx"].location];
-                        [self cacheCompiledShader:defFilePath cacheKey:defPath];
-                    }
-                    [self cacheCompiledShader:fragmentFilePath cacheKey:fragmentPath];
+                    break;
+                }
+                default:
+                    break;
+            }
+        }];
+    }
 
-                }
-            }
-            //判断是否需要编译顶点着色器
-            if ((!isDefaultVertextFile) && (compileType & emShaderCompileTypeVertex))
-            {
-                [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
-                    /** 编译顶点着色器 **/
-                    compileVSCount++;
-                    NSString *compileOutputPath = [self convertShader:fragmentPath
-                                                       shaderFilePath:vertexFilePath
-                                                          defFilePath:defFilePath
-                                                          compileType:emShaderCompileTypeVertex
-                                                             platform:platformInfo
-                                                         shaderSuffix:@"vs"
-                                                           andNeedLog:needLog];
-                    
-                    compileResult = compileOutputPath != nil;
-                    if (compileResult)
-                    {
-                        if (self.isRelease)
-                        {
-                        }
-                    }
-                    else
-                    {
-                        NSAssert(NO, @"%@-%@转换失败", vertexPath, platformInfo);
-                        [failedShaderArr addObject:[NSString stringWithFormat:@"%@-%@", vertexPath, platformInfo]];
-                    }
-                }];
-                if (compileResult)
-                {
-                    //既然编译成功了，那么就需要做MD5缓存，方便下次判断是否需要重新编译。
-                    //为了简化流程，不去判断到底该缓存什么，这里简单粗暴地处理：只要不是公用的存def和vertex，不论是否有变化，都直接缓存。
-                    /** 获取define文件的相对路径(相对于bgfx始) **/
-                    if (!isDefaultDefFile)
-                    {
-                        NSString *defPath = [defFilePath substringFromIndex:[defFilePath rangeOfString:@"bgfx"].location];
-                        [self cacheCompiledShader:defFilePath cacheKey:defPath];
-                    }
-                    [self cacheCompiledShader:vertexFilePath cacheKey:vertexPath];
-                }
-            }
-        }
-        else
-        {
-            NSLog(@"文件%@的MD5有对应cache的并且与cache的MD5相同，表示文件没有变化，不进行转换",fragmentPath);
-            NSLog(@"======================");
-            noNeedCompileCount++;
-        }
-    }];
-    
-    //转换结束，更新公用的def和vertext文件的MD5
-    /** 获取公用define文件的绝对路径 **/
-    NSString *commenDefFilePath = [self.mFileManager mDefaultDefineFilePath];
-    /** 获取公用define文件的相对路径(相对于bgfx始) **/
-    NSString *commonDefPath = [commenDefFilePath substringFromIndex:[commenDefFilePath rangeOfString:@"bgfx"].location];
-    
-    /** 获取公用顶点着色器文件绝对路径 **/
-    NSString *commonVertexFilePath = [self.mFileManager mDefaultVertexFilePath];
-    /** 获取公用顶点着色器文件的相对路径(相对于bgfx始) **/
-    NSString *commonVertexPath = [commonVertexFilePath substringFromIndex:[commonVertexFilePath rangeOfString:@"bgfx"].location];
-    
-    [self cacheCompiledShader:commenDefFilePath cacheKey:commonDefPath];
-    [self cacheCompiledShader:commonVertexFilePath cacheKey:commonVertexPath];
-    
     //最后把更新了的cache写入到UserDefault中
     [self saveshaderFileMD5Cache];
     
@@ -234,10 +184,6 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
                                                              withPlatform:platform
                                                            isRelease:self.isRelease];
     NSString *shaderFileName = [shaderName stringByAppendingPathExtension:suffix];
-    if (self.isRelease)
-    {
-        shaderFileName = [SFileMD5Generator MD5ForString:shaderFileName withIsRelease:YES];
-    }
     NSString *shaderOutputPath = [self.mFileManager setupCompileOutputPath:outputDir
                                                          andShaderFileName:shaderFileName];
     return shaderOutputPath;
@@ -327,9 +273,9 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
 
 - (BOOL)isFileChanged:(NSString *)filePath isDefaultFile:(BOOL)isDefault
 {
-    NSString *fileMD5 = [SFileMD5Generator generateMD5:filePath];
+    NSString *fileMD5 = [SFileMD5Generator generateMD5ForFileAtPath:filePath];
     
-    NSString *cacheKey = [filePath substringFromIndex:[filePath rangeOfString:@"bgfx"].location];
+    NSString *cacheKey = [filePath lastPathComponent];
     NSString *cachedFileMD5 = self.md5Dic[cacheKey];
     
     BOOL fileChanged = ![cachedFileMD5 isEqualToString:fileMD5];
@@ -341,21 +287,20 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
     else
     {
         //还需要判断是否存在现在编译环境需要的路径
-        NSString *bundleStr = [NSString stringWithFormat:@"%@.bundle", [SFileMD5Generator MD5ForString:@"output" withIsRelease:_isRelease]];
+        NSString *bundleStr = [NSString stringWithFormat:@"%@.bundle", @"output"];
         NSString *lastPath = [cacheKey stringByReplacingOccurrencesOfString:@"bgfx/" withString:@""];
         NSMutableArray<NSString *> *lastPathComposition = [[lastPath pathComponents] mutableCopy];
-        __weak typeof(self) weakSelf = self;
         [lastPathComposition enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             //获取路径最后部分加密后的字符串组合
-            lastPathComposition[idx] = [SFileMD5Generator MD5ForString:obj withIsRelease: weakSelf.isRelease];
+            lastPathComposition[idx] = obj;
         }];
         NSString *encodeLastPath = [NSString pathWithComponents:lastPathComposition];
         
-        NSString *encodePlatformMetalStr = [SFileMD5Generator MD5ForString:@"metal" withIsRelease: _isRelease];
+        NSString *encodePlatformMetalStr = @"metal";
         NSString *currentMetalPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.rootPath,bundleStr,encodePlatformMetalStr,encodeLastPath];
         BOOL isExistMetal = [[NSFileManager defaultManager] fileExistsAtPath:currentMetalPath];
         
-        NSString *encodePlatformGlslStr = [SFileMD5Generator MD5ForString:@"glsl" withIsRelease: _isRelease];
+        NSString *encodePlatformGlslStr = @"glsl";
         NSString *currentGlslPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.rootPath,bundleStr,encodePlatformGlslStr,encodeLastPath];
         BOOL isExistGlsl = [[NSFileManager defaultManager] fileExistsAtPath:currentGlslPath];
         
@@ -370,9 +315,10 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
     }
 }
 
-- (void)cacheCompiledShader:(NSString *)filePath cacheKey:(NSString *)cacheKey
+- (void)cacheCompiledShader:(NSString *)filePath
 {
-    NSString *fileMD5 = [SFileMD5Generator generateMD5:filePath];
+    NSString *cacheKey = [filePath lastPathComponent];
+    NSString *fileMD5 = [SFileMD5Generator generateMD5ForFileAtPath:filePath];
     self.md5Dic[cacheKey] = fileMD5;
 }
 
