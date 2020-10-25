@@ -22,12 +22,13 @@ typedef NS_OPTIONS(NSInteger, emShaderCompilePlatform) {
 
 @property (nonatomic, copy) NSString *bgfxShaderCToolPath;
 
-- (instancetype)initWithMainShaderFilePath:(NSString *)mainShaderFilePath
-                            andBGFXSrcPath:(NSString *)srcPath NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
-- (void)setCompilePlatform:(NSArray<NSString *> *)platform;
+- (instancetype)initWithShaderFolderPath:(NSString *)shaderRootFolderPath NS_DESIGNATED_INITIALIZER;
 
-- (void)startCompile:(BOOL)needLog;
+- (void)setConvertTargetPlatforms:(NSArray<NSString *> *)platforms;
+
+- (void)startConvertWithLog:(BOOL)needLog;
 
 @end
 

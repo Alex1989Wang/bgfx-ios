@@ -25,76 +25,54 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
 
 @interface SShaderConverter()
 
-@property(nonatomic, strong) SBgfxConverterWrapper *mShaderCompiler;
+@property(nonatomic, strong) SBgfxConverterWrapper *mBgfxConvter;
 
 @property(nonatomic, strong) SShaderFileLookup *mFileManager;
 
 @property(nonatomic, strong) NSMutableDictionary *md5Dic;
 
-@property(nonatomic, strong) NSArray<NSString *> *compilePlatform;
-
-@property(nonatomic, strong) NSString *mBGFXSrcPath;
+@property(nonatomic, strong) NSArray<NSString *> *convertPlatforms;
 
 @end
 
 @implementation SShaderConverter
 
-- (instancetype)init
-{
-    NSAssert(NO, @"请使用initWithMainShaderFilePath:");
-    return [self initWithMainShaderFilePath:@"" andBGFXSrcPath:@""];
-}
-
-- (instancetype)initWithMainShaderFilePath:(NSString *)mainShaderFilePath
-                            andBGFXSrcPath:(nonnull NSString *)srcPath
-{
+- (instancetype)initWithShaderFolderPath:(NSString *)shaderRootFolderPath {
     self = [super init];
-    if (self)
-    {
-        _mFileManager = [[SShaderFileLookup alloc] initWithMainShaderFilePath:mainShaderFilePath];
-        _mShaderCompiler = [[SBgfxConverterWrapper alloc] init];
-//        _compilePlatform = @[@"metal,ios,metal,metal",
-//                             @"glsl,linux,120,120"];
-        _mBGFXSrcPath = srcPath;
+    if (self) {
+        _mFileManager = [[SShaderFileLookup alloc] initWithShaderFolderPath:shaderRootFolderPath];
+        _mBgfxConvter = [[SBgfxConverterWrapper alloc] init];
     }
     return self;
 }
 
-
-- (void)setCompilePlatform:(NSArray<NSString *> *)platform
-{
-    _compilePlatform = platform;
+- (void)setConvertTargetPlatforms:(NSArray<NSString *> *)platforms {
+    _convertPlatforms = platforms;
 }
 
-- (void)startCompile:(BOOL)needLog
-{
-    [self preCompile:needLog];
-    [self compile:needLog];
+- (void)startConvertWithLog:(BOOL)needLog {
+    [self preConvert:needLog];
+    [self convert:needLog];
 }
 
-- (void)preCompile:(BOOL)needLog
-{
-    //把公用的vs强行转换一次
-    NSLog(@"🍏先转换公用的vs");
+- (void)preConvert:(BOOL)needLog {
+    // shared shaders should be converted first
+    NSLog(@"Converting shared shaders.");
     NSString *commonVSFilePath = [self.mFileManager mDefaultVertexFilePath];
     NSString *commonDefFilePath = [self.mFileManager mDefaultDefineFilePath];
-    [self.compilePlatform enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
-        NSString *compileOutputPath = [self compileShader:@"bgfx/common/common.fs"
-                                           shaderFilePath:commonVSFilePath
-                                              defFilePath:commonDefFilePath
-                                              compileType:emShaderCompileTypeVertex
-                                                 platform:platformInfo
-                                             shaderSuffix:@"vs"
-                                               andNeedLog:needLog];
-        if (self.isRelease && compileOutputPath != nil)
-        {
-        }
+    [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
+        [self convertShader:@"bgfx/common/common.fs"
+             shaderFilePath:commonVSFilePath
+                defFilePath:commonDefFilePath
+                compileType:emShaderCompileTypeVertex
+                   platform:platformInfo
+               shaderSuffix:@"vs"
+                 andNeedLog:needLog];
     }];
-    
-    NSLog(@"=======================================================");
+    NSLog(@"Done converting shared shaders.");
 }
 
-- (void)compile:(BOOL)needLog
+- (void)convert:(BOOL)needLog
 {
     NSLog(@"🍎再开始转换其他shader");
     
@@ -136,10 +114,10 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
             //判断是否需要编译片元着色器
             if (compileType & emShaderCompileTypeFragment)
             {
-                [self.compilePlatform enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
+                [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
                     /** 编译片元着色器 **/
                     compileFSCount++;
-                    NSString *compileOutputPath = [self compileShader:fragmentPath
+                    NSString *compileOutputPath = [self convertShader:fragmentPath
                                                        shaderFilePath:fragmentFilePath
                                                           defFilePath:defFilePath
                                                           compileType:emShaderCompileTypeFragment
@@ -176,10 +154,10 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
             //判断是否需要编译顶点着色器
             if ((!isDefaultVertextFile) && (compileType & emShaderCompileTypeVertex))
             {
-                [self.compilePlatform enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
+                [self.convertPlatforms enumerateObjectsUsingBlock:^(NSString *platformInfo, NSUInteger idx, BOOL *stop) {
                     /** 编译顶点着色器 **/
                     compileVSCount++;
-                    NSString *compileOutputPath = [self compileShader:fragmentPath
+                    NSString *compileOutputPath = [self convertShader:fragmentPath
                                                        shaderFilePath:vertexFilePath
                                                           defFilePath:defFilePath
                                                           compileType:emShaderCompileTypeVertex
@@ -252,9 +230,9 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
 - (NSString *)generateShaderCompileOutputPath:(NSString *)shaderFileRelativePath platformInfo:(NSString *)platform shaderSuffix:(NSString *)suffix
 {
     NSString *shaderName = [self.mFileManager getShaderFileName:shaderFileRelativePath];
-    NSString *outputDir = [self.mFileManager setupCompileOutputDirectory:shaderFileRelativePath
-                                                             andPlatform:platform
-                                                           withIsRelease:self.isRelease];
+    NSString *outputDir = [self.mFileManager setupShaderOutputDirectory:shaderFileRelativePath
+                                                             withPlatform:platform
+                                                           isRelease:self.isRelease];
     NSString *shaderFileName = [shaderName stringByAppendingPathExtension:suffix];
     if (self.isRelease)
     {
@@ -265,7 +243,7 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
     return shaderOutputPath;
 }
 
-- (NSString *)compileShader:(NSString *)shaderRelativePath
+- (NSString *)convertShader:(NSString *)shaderRelativePath
              shaderFilePath:(NSString *)shaderFilePath
                 defFilePath:(NSString *)defFilePath
                 compileType:(emShaderCompileType)type
@@ -305,15 +283,15 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
     NSLog(@"outputPath: %@\n 转换前路径：%@", outputPath, shaderFilePath);
     [compileParam setDefFilePath:defFilePath];
     
-    [compileParam setBgfxSrcPath:self.mBGFXSrcPath];
+    [compileParam setBgfxSrcPath:self.mFileManager.bgfxDependencyPath];
     
     NSArray<NSString *> *platformInfo = [platform componentsSeparatedByString:@","];
     [compileParam setPlatform:platformInfo[1]];
     NSString *shaderModel = shaderType == emShaderCompileTypeVertex ? platformInfo[2] : platformInfo[3];
     [compileParam setShaderModel:shaderModel ? shaderModel : @""];
 
-    self.mShaderCompiler.bgfxShaderCToolPath = self.bgfxShaderCToolPath;
-    return [self.mShaderCompiler compileShaderWithParam:compileParam needLog:needToLog];
+    self.mBgfxConvter.bgfxShaderCToolPath = self.bgfxShaderCToolPath;
+    return [self.mBgfxConvter compileShaderWithParam:compileParam needLog:needToLog];
 }
 
 - (emShaderCompileOption)decideShaderCompileType:(NSString *)fragmentFilePath
@@ -374,11 +352,11 @@ typedef NS_ENUM(NSInteger, emShaderCompileType) {
         NSString *encodeLastPath = [NSString pathWithComponents:lastPathComposition];
         
         NSString *encodePlatformMetalStr = [SFileMD5Generator MD5ForString:@"metal" withIsRelease: _isRelease];
-        NSString *currentMetalPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.mainShaderFilePath,bundleStr,encodePlatformMetalStr,encodeLastPath];
+        NSString *currentMetalPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.rootPath,bundleStr,encodePlatformMetalStr,encodeLastPath];
         BOOL isExistMetal = [[NSFileManager defaultManager] fileExistsAtPath:currentMetalPath];
         
         NSString *encodePlatformGlslStr = [SFileMD5Generator MD5ForString:@"glsl" withIsRelease: _isRelease];
-        NSString *currentGlslPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.mainShaderFilePath,bundleStr,encodePlatformGlslStr,encodeLastPath];
+        NSString *currentGlslPath = [NSString stringWithFormat:@"%@/%@/%@/%@",_mFileManager.rootPath,bundleStr,encodePlatformGlslStr,encodeLastPath];
         BOOL isExistGlsl = [[NSFileManager defaultManager] fileExistsAtPath:currentGlslPath];
         
         //只有bgfx本身没有改变&&当前环境需要的文件存在 = 没有改变

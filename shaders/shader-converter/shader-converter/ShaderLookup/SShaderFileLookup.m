@@ -8,42 +8,38 @@
 #import "SShaderFileLookup.h"
 #import "SFileMD5Generator.h"
 
+NSString *const kShaderRootFolderName = @"shaders";
+
+NSString *const kBgfxDependencyFolderSubpath = @"/common/src";
+
+NSString *const kVertexShaderFolderSubpath = @"/vertexs";
+
+NSString *const kFragmentShaderFolderSubpath = @"/fragments";
+
 @interface SShaderFileLookup()
 
-@property(nonatomic, strong) NSString *mMainPath;
+@property(nonatomic, copy) NSString *rootPath;
 
 @property(nonatomic, strong) NSFileManager *mFileMgr;
-
-//@property(nonatomic, strong, readwrite) NSString *mDefaultVertexFilePath;
-//
-//@property(nonatomic, strong, readwrite) NSString *mDefaultDefineFilePath;
 
 @end
 
 @implementation SShaderFileLookup
 
-- (instancetype)init
-{
-    NSAssert(NO, @"请使用initWithMainShaderFilePath:");
-    return [self initWithMainShaderFilePath:@""];
-}
-
-- (instancetype)initWithMainShaderFilePath:(NSString *)mainShaderFilePath
-{
+- (instancetype)initWithShaderFolderPath:(NSString *)shaderRootPath {
     self = [super init];
-    if (self)
-    {
+    if (self) {
+        _rootPath = shaderRootPath;
         _mFileMgr = [NSFileManager defaultManager];
-        _mMainPath = mainShaderFilePath;
-        _mDefaultDefineFilePath = [mainShaderFilePath stringByAppendingPathComponent:@"bgfx/default/common.def"];
-        _mDefaultVertexFilePath = [mainShaderFilePath stringByAppendingPathComponent:@"bgfx/default/common.vs"];
+        _mDefaultDefineFilePath = [self.bgfxDependencyPath stringByAppendingPathComponent:@"/varying.def.sc"];
+        _mDefaultVertexFilePath = [self.rootPath stringByAppendingPathComponent:@"/common/common.vs"];
     }
     return self;
 }
 
 - (NSArray<NSString *> *)getAllFragmentFile
 {
-    NSString *bgfxPath = [self.mMainPath stringByAppendingPathComponent:@"bgfx"];
+    NSString *bgfxPath = [self.rootPath stringByAppendingPathComponent:@"bgfx"];
 
     NSDirectoryEnumerator *directoryEnumerator = [self.mFileMgr enumeratorAtPath:bgfxPath];
 
@@ -114,7 +110,7 @@
     return [[shaderFilePath stringByDeletingPathExtension] lastPathComponent];
 }
 
-- (NSString *)setupCompileOutputDirectory:(NSString *)fragmentFilePath andPlatform:(NSString *)platform withIsRelease:(BOOL) isRelease
+- (NSString *)setupShaderOutputDirectory:(NSString *)fragmentFilePath withPlatform:(NSString *)platform isRelease:(BOOL) isRelease
 {
     NSMutableArray<NSString *> *pathComposition = [[fragmentFilePath pathComponents] mutableCopy];
     pathComposition[0] = platform;
@@ -151,13 +147,12 @@
 #pragma mark - 內部方法
 - (NSString *)setupWholeFilePathWithRelativePath:(NSString *)relativePath
 {
-    return [self.mMainPath stringByAppendingPathComponent:relativePath];
+    return [self.rootPath stringByAppendingPathComponent:relativePath];
 }
 
 #pragma mark Getter
-- (NSString *)mainShaderFilePath
-{
-    return self.mMainPath;
+- (NSString *)bgfxDependencyPath {
+    return [NSString stringWithFormat:@"%@%@", self.rootPath, kBgfxDependencyFolderSubpath];
 }
 
 @end

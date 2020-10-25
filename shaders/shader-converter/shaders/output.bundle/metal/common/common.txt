@@ -1,2 +1,0 @@
-Unable to open file '/Users/jiangwang/Documents/BgfxRepos/bgfx-ios/shaders/shader-converter/shaders/bgfx/default/common.vs'.
-Failed to build shader.

@@ -52,15 +52,19 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/jiangwang/Documents/BgfxRepos/bgfx-ios/shaders/shader-converter/shaders"
+            argument = "/Users/jiang/Documents/Practice/BGFX/bgfx-iOS/bgfx-ios/shaders/shader-converter/shaders"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "metal"
+            argument = "metal,opengl"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "/Users/jiangwang/Documents/BgfxRepos/bgfx-ios/shaders/shader-converter/libs/shadercRelease"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/jiang/Documents/Practice/BGFX/bgfx-iOS/bgfx-ios/shaders/shader-converter/libs/shadercRelease"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
