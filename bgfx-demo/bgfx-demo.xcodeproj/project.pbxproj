@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC0FBE052545CA54003FDEF5 /* PgEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0FBE022545CA53003FDEF5 /* PgEntry.cpp */; };
+		AC0FBE062545CA54003FDEF5 /* PgBgfxUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0FBE032545CA53003FDEF5 /* PgBgfxUtils.cpp */; };
 		AC50F2FD2544221E00D82834 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AC50F2FC2544221E00D82834 /* AppDelegate.m */; };
 		AC50F3082544221F00D82834 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC50F3072544221F00D82834 /* Assets.xcassets */; };
 		AC50F30B2544221F00D82834 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC50F3092544221F00D82834 /* LaunchScreen.storyboard */; };
@@ -69,6 +71,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AC0FBE012545CA53003FDEF5 /* PgBgfxUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PgBgfxUtils.hpp; sourceTree = "<group>"; };
+		AC0FBE022545CA53003FDEF5 /* PgEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PgEntry.cpp; sourceTree = "<group>"; };
+		AC0FBE032545CA53003FDEF5 /* PgBgfxUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PgBgfxUtils.cpp; sourceTree = "<group>"; };
+		AC0FBE042545CA54003FDEF5 /* PgEntry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PgEntry.hpp; sourceTree = "<group>"; };
 		AC50F2F82544221E00D82834 /* bgfx-demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bgfx-demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC50F2FB2544221E00D82834 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AC50F2FC2544221E00D82834 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -195,6 +201,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AC0FBCED2545C469003FDEF5 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				AC0FBE032545CA53003FDEF5 /* PgBgfxUtils.cpp */,
+				AC0FBE012545CA53003FDEF5 /* PgBgfxUtils.hpp */,
+				AC0FBE022545CA53003FDEF5 /* PgEntry.cpp */,
+				AC0FBE042545CA54003FDEF5 /* PgEntry.hpp */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
 		AC50F2EF2544221E00D82834 = {
 			isa = PBXGroup;
 			children = (
@@ -252,6 +269,7 @@
 		AC50F33F254422D200D82834 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				AC0FBCED2545C469003FDEF5 /* Renderer */,
 				AC50F3E725442C2800D82834 /* RenderView */,
 				AC50F3402544230100D82834 /* BHomeViewController.h */,
 				AC50F3412544230100D82834 /* BHomeViewController.mm */,
@@ -623,10 +641,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC0FBE052545CA54003FDEF5 /* PgEntry.cpp in Sources */,
 				AC50F2FD2544221E00D82834 /* AppDelegate.m in Sources */,
 				AC50F3EA25442C5100D82834 /* BRenderMetalView.m in Sources */,
 				AC50F30E2544221F00D82834 /* main.m in Sources */,
 				AC50F3422544230100D82834 /* BHomeViewController.mm in Sources */,
+				AC0FBE062545CA54003FDEF5 /* PgBgfxUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
