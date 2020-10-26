@@ -14,10 +14,14 @@
 @interface BHomeViewController ()
 @property (nonatomic, strong) BRenderMetalView *mtkView;
 @property (nonatomic, strong) CADisplayLink *link;
+@property (nonatomic, assign) CGSize renderSize;
 @property (nonatomic, assign) bgfx::VertexBufferHandle m_vbh;
 @property (nonatomic, assign) bgfx::IndexBufferHandle m_ibh;
 @property (nonatomic, assign) bgfx::ProgramHandle m_program;
 @property (nonatomic, assign) bgfx::VertexLayout m_layout;
+@property (nonatomic, assign) bgfx::TextureHandle m_texture;
+@property (nonatomic, assign) bgfx::UniformHandle m_textureInput;
+@property (nonatomic, assign) bgfx::FrameBufferHandle m_fbh;
 @end
 
 struct VertexCoordTextureCoord {
@@ -55,6 +59,9 @@ static const uint16_t s_TriList[] =
     self.mtkView = [[BRenderMetalView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:self.mtkView];
     self.mtkView.backgroundColor = [UIColor whiteColor];
+    CGSize size = self.view.bounds.size;
+    CGFloat scale = [UIScreen mainScreen].scale;
+    self.renderSize = CGSizeMake(size.width * scale, size.height * scale);
     // bgfx
     [self initBgfx];
     // display
@@ -102,11 +109,35 @@ static const uint16_t s_TriList[] =
     .end();
     self.m_vbh = bgfx::createVertexBuffer(bgfx::makeRef(s_fbo_Vertices, sizeof(s_fbo_Vertices)), self.m_layout);
     self.m_ibh = bgfx::createIndexBuffer(bgfx::makeRef(s_TriList, sizeof(s_TriList)));
-    bgfx::ProgramHandle program = loadProgram("", "");
+    NSString *shaderBundle = [[NSBundle mainBundle] pathForResource:@"output" ofType:@"bundle"];
+    NSString *vsPath = [NSString stringWithFormat:@"%@/metal/common.vs", shaderBundle];
+    NSString *fsPath = [NSString stringWithFormat:@"%@/metal/common.fs", shaderBundle];
+    self.m_program = loadProgram([vsPath cStringUsingEncoding:NSUTF8StringEncoding], [fsPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    NSString *pngPath = [[NSBundle mainBundle] pathForResource:@"parallax-d" ofType:@"png"];
+    bgfx::TextureHandle texture = loadTexture([pngPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    self.m_texture = texture;
+    NSAssert(bgfx::isValid(self.m_texture), @"invalid handle");
+    self.m_textureInput = bgfx::createUniform("common_texColor", bgfx::UniformType::Sampler);
+    // 切记 bgfx 的 FBO 初始化要定义成BGFX_INVALID_HANDLE，不然要被坑
+    bgfx::FrameBufferHandle m_fbh = BGFX_INVALID_HANDLE;
+    // 不设置成BGFX_INVALID_HANDLE的话，这里第一次上来，isValid就会返回true
+    if (!bgfx::isValid(m_fbh)) {
+        self.m_fbh = bgfx::createFrameBuffer(size.width * scale, size.height * scale, bgfx::TextureFormat::Enum::BGRA8);
+    }
 }
 
 #pragma MARK: display
 - (void)displayTicked {
+    // 渲染到屏幕的 view 需要主动将该 view 的 FBO 设置为 invalid，然后从 FBO 中拿出 attach 的纹理，设置到这次渲染需要的输入参数中,然后显示
+    bgfx::setVertexBuffer(0, self.m_vbh);
+    bgfx::setIndexBuffer(self.m_ibh);
+    bgfx::setViewRect(0, 0, 0, self.renderSize.width, self.renderSize.height);
+//    bgfx::setViewFrameBuffer(0, BGFX_INVALID_HANDLE);
+    bgfx::setViewFrameBuffer(0, self.m_fbh);
+    bgfx::setState(BGFX_STATE_WRITE_RGB|BGFX_STATE_WRITE_A);
+    bgfx::setTexture(0, self.m_textureInput, self.m_texture);
+    bgfx::submit(0, self.m_program);
+    // 显示到屏幕
     bgfx::frame();
 }
 
